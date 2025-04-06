@@ -1,4 +1,4 @@
-import { TaskStatus } from '~/types/common';
+import { TaskStatus } from '../types/common';
 import { HitcraftError } from './api';
 
 interface BaseTaskStatus {

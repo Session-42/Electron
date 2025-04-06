@@ -128,21 +128,4 @@ a {
     animation: progress linear infinite;
 }
 
-/* Custom Scrollbar */
-body {
-    scrollbar-width: thin;
-    scrollbar-color: #e3e9f7 transparent;
-}
-
-::-webkit-scrollbar {
-    width: 9px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #e3e9f7;
-    border-radius: 4.5px;
-}
+/* Remove all scrollbar styles - handled by Electron */

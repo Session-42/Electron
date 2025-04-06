@@ -1,7 +1,7 @@
 {
     "name": "hitcraft",
     "productName": "HitCraft",
-    "version": "0.7.6",
+    "version": "0.1.0",
     "description": "HitCraft Desktop app",
     "author": "Session42 Inc",
     "private": true,
@@ -87,7 +87,10 @@
         ],
         "mac": {
             "icon": "assets/icons/mac.icns",
-            "target": ["dmg", "zip"]
+            "target": ["dmg", "zip"],
+            "hardenedRuntime": true,
+            "gatekeeperAssess": false,
+            "identity": null
         },
         "asar": true,
         "asarUnpack": [

@@ -29,14 +29,20 @@ function createWindow() {
         minWidth: 800,
         minHeight: 600,
         titleBarStyle: 'hiddenInset',
+        transparent: true,
+        visualEffectState: 'active',
+        vibrancy: 'under-window',
         webPreferences: {
-            nodeIntegration: false,
-            contextIsolation: true,
-            webSecurity: true,
-            preload: path.join(__dirname, 'preload.cjs')
+            nodeIntegration: true,
+            contextIsolation: false,
+            webSecurity: false,
+            preload: path.join(__dirname, 'preload.cjs'),
+            enableBlinkFeatures: 'OverlayScrollbars',
+            overlayScrollbars: true
         },
         icon: path.join(__dirname, 'assets/icons/mac.icns'),
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        trafficLightPosition: { x: 20, y: 20 }
     });
 
     mainWindow.setMenu(null);
@@ -73,6 +79,7 @@ function createWindow() {
 
     if (isDev) {
         mainWindow.loadURL('http://localhost:5173/login');
+        mainWindow.webContents.openDevTools();
     } else {
         mainWindow.loadURL('https://hitcraft.ai/login');
     }
@@ -113,6 +120,54 @@ function createWindow() {
 
     mainWindow.on('focus', () => isAppFocused = true);
     mainWindow.on('blur', () => isAppFocused = false);
+
+    // Apply only the scrollbar styling
+    mainWindow.webContents.on('did-finish-load', () => {
+        // Add only scrollbar styling - no header/padding changes
+        mainWindow.webContents.insertCSS(`
+            /* Basic scrollbar that works with your app */
+            ::-webkit-scrollbar {
+                width: 8px;
+                background-color: transparent;
+            }
+            
+            ::-webkit-scrollbar-track {
+                background-color: transparent;
+            }
+            
+            /* Scrollbar thumb with 40px gap at top */
+            ::-webkit-scrollbar-thumb {
+                background-color: transparent;
+                border-radius: 4px;
+                height: calc(100% - 40px);
+                margin-top: 40px;
+            }
+            
+            /* Show scrollbar only when scrolling or hovering */
+            :hover::-webkit-scrollbar-thumb,
+            .scrolling::-webkit-scrollbar-thumb {
+                background-color: rgba(255, 255, 255, 0.15);
+            }
+        `);
+
+        // Just the scroll detection
+        mainWindow.webContents.executeJavaScript(`
+            // Track scrolling state for styling
+            let scrollTimeout;
+            
+            function handleScroll() {
+                document.body.classList.add('scrolling');
+                
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    document.body.classList.remove('scrolling');
+                }, 1000);
+            }
+            
+            // Attach to document scroll
+            document.addEventListener('scroll', handleScroll, { passive: true });
+        `);
+    });
 }
 
 function createTray() {
