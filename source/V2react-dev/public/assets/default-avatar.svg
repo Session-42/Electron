@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <!-- Background Circle -->
+    <circle cx="100" cy="100" r="100" fill="#E2E8F0" />
+
+    <!-- Avatar Shape -->
+    <g transform="translate(40, 40)">
+        <!-- Head -->
+        <circle cx="60" cy="45" r="30" fill="#94A3B8" />
+
+        <!-- Body -->
+        <path d="M60 80 C20 80 0 120 0 120 L120 120 C120 120 100 80 60 80Z" fill="#94A3B8" />
+    </g>
+</svg>

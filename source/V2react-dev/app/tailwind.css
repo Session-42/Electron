@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+#root {
+    @apply h-full w-full;
+}
+
+/* Mobile touch optimizations */
+html {
+    height: 100vh;
+    height: 100dvh;
+    width: 100vw;
+    width: 100dvw;
+    overflow: hidden;
+    position: fixed;
+    touch-action: none;
+    overscroll-behavior: none;
+}
+
+body {
+    height: 100%;
+    overflow: hidden;
+    -webkit-overflow-scrolling: none;
+    overscroll-behavior: none;
+    touch-action: none;
+    position: fixed;
+    width: 100%;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    overscroll-behavior: none;
+}
+
+input,
+textarea,
+[contenteditable] {
+    user-select: text;
+    touch-action: manipulation;
+}
+
+button,
+a {
+    touch-action: manipulation;
+}
+
+/* Poppins Font Face Declarations */
+@font-face {
+    font-family: 'Poppins-Light';
+    src: url('/fonts/Poppins/Poppins-Light.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins-Bold';
+    src: url('/fonts/Poppins/Poppins-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins-SemiBold';
+    src: url('/fonts/Poppins/Poppins-SemiBold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/fonts/Poppins/Poppins-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/fonts/Poppins/Poppins-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/fonts/Poppins/Poppins-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@layer base {
+    * {
+        @apply border-border-secondary;
+    }
+    body {
+        @apply bg-background-primary text-text-primary;
+    }
+}
+
+@keyframes progress {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.animate-progress {
+    animation: progress linear infinite;
+}
+
+/* Custom Scrollbar */
+body {
+    scrollbar-width: thin;
+    scrollbar-color: #e3e9f7 transparent;
+}
+
+::-webkit-scrollbar {
+    width: 9px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #e3e9f7;
+    border-radius: 4.5px;
+}

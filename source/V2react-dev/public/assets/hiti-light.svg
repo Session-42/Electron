@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 146 146" style="--icon-color: var(--accent, #B60280);">
+    <!-- Define the gradient -->
+    <defs>
+        <style>
+            @keyframes blink {
+                0%, 96%, 100% { transform: scaleY(1); }
+                98% { transform: scaleY(0.1); }
+            }
+            .eye {
+                animation: blink 5s ease-in-out infinite;
+                transform-origin: center;
+            }
+            .center-circle { fill: #343434; }
+            .face-part { fill: #fefefe; }
+            .eye-background { fill: #343434; }
+            :root.dark .center-circle { fill: url(#noseGradient); }
+            :root.dark .face-part { fill: #343434; }
+        </style>
+    </defs>
+
+    <!-- Circle with accent color -->
+    <circle cx="73" cy="73" r="68.25" fill="none" stroke="var(--icon-color)" stroke-width="3" />
+
+    <!-- White border -->
+    <circle cx="73" cy="73" r="66.675" fill="none" stroke="white" stroke-width="3" />
+
+    <!-- Center -->
+    <circle cx="73" cy="73" r="66.15" class="center-circle" />
+
+    <!-- Face parts (eyes) -->
+    <g class="face-parts">
+        <g>
+            <!-- Eye backgrounds -->
+            <rect class="eye-background" x="39.4" y="63.1" width="27.4" height="42.8" rx="13.7" ry="13.7" />
+            <rect class="eye-background" x="79.4" y="63.1" width="27.4" height="42.8" rx="13.7" ry="13.7" />
+            <!-- Eye whites -->
+            <rect class="face-part eye" x="39.9" y="48.6" width="26.4" height="41.8" rx="13.2" ry="13.2" />
+            <rect class="face-part eye" x="79.9" y="48.6" width="26.4" height="41.8" rx="13.2" ry="13.2" />
+        </g>
+   </g>
+    
+    <!-- Highlight (visible in dark mode) -->
+    <circle cx="73" cy="63" r="25" fill="rgba(255,255,255,0.1)" class="dark-only" style="display: none;" />
+</svg>

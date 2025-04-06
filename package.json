@@ -1,0 +1,99 @@
+{
+    "name": "hitcraft",
+    "productName": "HitCraft",
+    "version": "0.7.6",
+    "description": "HitCraft Desktop app",
+    "author": "Session42 Inc",
+    "private": true,
+    "sideEffects": [
+        "*.css"
+    ],
+    "type": "module",
+    "main": "main.cjs",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "build-dev": "tsc && vite build --mode development",
+        "preview": "vite preview",
+        "start": "vite preview",
+        "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+        "typecheck": "tsc --noEmit",
+        "dist": "electron-builder",
+        "package": "npm run build && npm run dist"
+    },
+    "dependencies": {
+        "@descope/react-sdk": "^2.3.4",
+        "@radix-ui/react-slot": "^1.1.1",
+        "@tanstack/react-query": "^5.64.0",
+        "@types/node": "^20.0.0",
+        "axios": "^1.7.9",
+        "clsx": "^2.1.1",
+        "framer-motion": "^11.11.4",
+        "howler": "^2.2.4",
+        "isbot": "^4.1.0",
+        "lodash.groupby": "^4.6.0",
+        "lucide-react": "^0.451.0",
+        "mixpanel-browser": "^2.60.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-markdown": "^9.0.3",
+        "react-router": "^7.1.1",
+        "rehype-raw": "^7.0.0",
+        "remark-gfm": "^4.0.0",
+        "tailwind-merge": "^2.5.3",
+        "tailwindcss-animate": "^1.0.7"
+    },
+    "devDependencies": {
+        "@tailwindcss/typography": "^0.5.16",
+        "@types/howler": "^2.2.12",
+        "@types/lodash.groupby": "^4.6.9",
+        "@types/mixpanel-browser": "^2.51.0",
+        "@types/node": "^20.0.0",
+        "@types/react": "^18.2.20",
+        "@types/react-dom": "^18.2.7",
+        "@typescript-eslint/eslint-plugin": "^6.7.4",
+        "@typescript-eslint/parser": "^6.7.4",
+        "@vitejs/plugin-react": "^4.3.4",
+        "autoprefixer": "^10.4.20",
+        "electron": "28.2.7",
+        "electron-builder": "24.13.3",
+        "eslint": "^8.38.0",
+        "eslint-import-resolver-typescript": "^3.6.1",
+        "eslint-plugin-import": "^2.28.1",
+        "eslint-plugin-jsx-a11y": "^6.7.1",
+        "eslint-plugin-react": "^7.33.2",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "postcss": "^8.4.38",
+        "prettier": "^3.4.2",
+        "tailwindcss": "^3.4.13",
+        "typescript": "^5.1.6",
+        "vite": "^5.1.0",
+        "vite-tsconfig-paths": "^4.2.1"
+    },
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "build": {
+        "appId": "com.session42.hitcraft",
+        "productName": "HitCraft",
+        "directories": {
+            "output": "dist"
+        },
+        "files": [
+            "dist/**/*",
+            "main.cjs",
+            "preload.cjs",
+            "icon.icns"
+        ],
+        "mac": {
+            "category": "public.app-category.developer-tools",
+            "icon": "icon.icns",
+            "target": ["dir"],
+            "identity": null
+        },
+        "asar": true,
+        "asarUnpack": [
+            "dist/**/*"
+        ]
+    }
+}
