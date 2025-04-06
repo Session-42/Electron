@@ -1,6 +1,6 @@
 // This file enhances the main Electron process with additional notification features
 
-const { app, BrowserWindow, ipcMain, Notification, Menu, Tray } = require('electron');
+const { app, BrowserWindow, ipcMain, Notification, Menu, Tray, shell, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const isDev = process.env.NODE_ENV === 'development';
@@ -26,83 +26,56 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+        minWidth: 800,
+        minHeight: 600,
+        titleBarStyle: 'hiddenInset',
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
-            webSecurity: false,
+            webSecurity: true,
             preload: path.join(__dirname, 'preload.cjs')
         },
-        icon: path.join(__dirname, 'icon.icns')
+        icon: path.join(__dirname, 'assets/icons/mac.icns'),
+        backgroundColor: '#ffffff'
     });
 
-    // Add console logging to the renderer process
-    mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
-        logDebug('Renderer Console:', { level, message, line, sourceId });
+    mainWindow.setMenu(null);
+
+    // Handle navigation
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+        console.log('Navigation:', url);
+        
+        if (url.includes('/login')) {
+            session.defaultSession.cookies.get({})
+                .then(cookies => {
+                    const hasAuthCookie = cookies.some(cookie => 
+                        cookie.domain === '.hitcraft.ai' && 
+                        (cookie.name === 'sessionToken' || cookie.name.includes('auth'))
+                    );
+                    
+                    if (hasAuthCookie) {
+                        event.preventDefault();
+                        mainWindow.loadURL('https://app.hitcraft.ai');
+                    }
+                });
+        }
     });
 
-    // Add error handling
-    mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-        logDebug('Failed to load:', { errorCode, errorDescription });
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        if (url.includes('accounts.google.com') || 
+            url.includes('auth.hitcraft.ai') ||
+            url.includes('app.hitcraft.ai')) {
+            return { action: 'allow' };
+        }
+        shell.openExternal(url);
+        return { action: 'deny' };
     });
 
     if (isDev) {
-        logDebug('Loading dev server URL');
-        mainWindow.loadURL('http://localhost:5173');
+        mainWindow.loadURL('http://localhost:5173/login');
     } else {
-        // Try multiple paths in order
-        const possiblePaths = [
-            path.join(__dirname, 'dist', 'index.html'),
-            path.join(app.getAppPath(), 'dist', 'index.html'),
-            path.join(process.resourcesPath, 'app.asar', 'dist', 'index.html'),
-            path.join(process.resourcesPath, 'app.asar.unpacked', 'dist', 'index.html')
-        ];
-
-        logDebug('Checking possible index.html locations:');
-        possiblePaths.forEach(p => {
-            logDebug(`- ${p} exists:`, fs.existsSync(p));
-            if (fs.existsSync(p)) {
-                logDebug(`Directory contents of ${path.dirname(p)}:`, fs.readdirSync(path.dirname(p)));
-            }
-        });
-
-        const indexPath = possiblePaths.find(p => fs.existsSync(p));
-        
-        if (indexPath) {
-            logDebug('Loading index.html from:', indexPath);
-            mainWindow.loadFile(indexPath, {
-                search: `timestamp=${Date.now()}`  // Prevent caching
-            }).catch(err => {
-                logDebug('Error loading index.html:', err);
-            });
-        } else {
-            logDebug('Could not find index.html in any location');
-            mainWindow.webContents.openDevTools();
-        }
+        mainWindow.loadURL('https://hitcraft.ai/login');
     }
-
-    // Always open DevTools for debugging
-    mainWindow.webContents.openDevTools();
-
-    // Log page title changes
-    mainWindow.webContents.on('page-title-updated', (event, title) => {
-        logDebug('Page title updated:', title);
-    });
-
-    // Log navigation events
-    mainWindow.webContents.on('did-start-loading', () => {
-        logDebug('Page started loading');
-    });
-
-    mainWindow.webContents.on('did-finish-load', () => {
-        logDebug('Page finished loading');
-    });
-
-    mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-        logDebug('Page failed to load:', errorCode, errorDescription);
-    });
-
-    mainWindow.on('focus', () => isAppFocused = true);
-    mainWindow.on('blur', () => isAppFocused = false);
 
     mainWindow.on('close', (event) => {
         if (!isQuitting) {
@@ -112,11 +85,38 @@ function createWindow() {
         }
         return true;
     });
+
+    mainWindow.webContents.on('did-navigate', (event, url) => {
+        console.log('URL changed:', url);
+        if (url.includes('/login')) {
+            session.defaultSession.cookies.get({})
+                .then(cookies => {
+                    const hasAuthCookie = cookies.some(cookie => 
+                        cookie.domain === '.hitcraft.ai' && 
+                        (cookie.name === 'sessionToken' || cookie.name.includes('auth'))
+                    );
+                    
+                    if (hasAuthCookie) {
+                        mainWindow.loadURL('https://app.hitcraft.ai');
+                    }
+                });
+        }
+    });
+
+    mainWindow.webContents.on('page-title-updated', (event, title) => {
+        logDebug('Page title updated:', title);
+    });
+
+    mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+        logDebug('Page failed to load:', errorCode, errorDescription);
+    });
+
+    mainWindow.on('focus', () => isAppFocused = true);
+    mainWindow.on('blur', () => isAppFocused = false);
 }
 
-// Create tray icon and menu
 function createTray() {
-  const iconPath = path.join(__dirname, 'icon.icns');
+  const iconPath = path.join(__dirname, 'assets/icons/mac.icns');
   if (!fs.existsSync(iconPath)) {
     console.error('Tray icon not found at:', iconPath);
     return;
@@ -146,7 +146,6 @@ function createTray() {
     tray.setToolTip('HitCraft');
     tray.setContextMenu(contextMenu);
     
-    // Double-click on tray icon to show the app
     tray.on('double-click', () => {
       if (mainWindow) {
         mainWindow.show();
@@ -158,41 +157,44 @@ function createTray() {
   }
 }
 
-// Create window when Electron has finished initialization
 app.whenReady().then(() => {
   createWindow();
   createTray();
 
+  if (process.platform === 'darwin') {
+    app.dock.setIcon(path.join(__dirname, 'assets/icons/mac.icns'));
+  }
+
+  session.defaultSession.clearStorageData({ storages: ['cookies'] });
+
   app.on('activate', () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+    } else {
+        mainWindow.show();
+    }
   });
 });
 
-// Handle the quit event properly
 app.on('before-quit', () => {
   isQuitting = true;
 });
 
-// Quit when all windows are closed, except on macOS
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-// Handle artifact generation notifications
 ipcMain.on('artifact-generated', (event, artifactData) => {
   if (!isAppFocused) {
     const notification = new Notification({
       title: 'New Artifact Generated',
       body: artifactData.message || 'A new artifact has been generated',
-      icon: path.join(__dirname, 'icon.icns')
+      icon: path.join(__dirname, 'assets/icons/mac.icns')
     });
     
     notification.show();
     
     notification.on('click', () => {
-      // Focus the window when notification is clicked
       if (mainWindow) {
         if (mainWindow.isMinimized() || !mainWindow.isVisible()) {
           mainWindow.show();
